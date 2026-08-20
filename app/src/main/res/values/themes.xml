@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.NamajTrackerApp" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:datePickerDialogTheme">@style/CustomDatePickerTheme</item>
+        <item name="android:colorAccent">@color/clay_brown</item>
+        <item name="android:colorPrimary">@color/clay_brown</item>
+    </style>
+
+    <style name="CustomDatePickerTheme" parent="android:Theme.Material.Light.Dialog">
+        <item name="android:colorAccent">@color/clay_brown</item>
+        <item name="android:colorPrimary">@color/clay_brown</item>
+        <item name="android:colorBackground">#FFFFFFFF</item>
+    </style>
+</resources>
