@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.Color as AndroidColor
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -54,7 +55,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.namajtrackerapp.model.AppLanguage
 import com.example.namajtrackerapp.ui.theme.ClayBrownPrimary
-import com.example.namajtrackerapp.ui.theme.SoftButterAccent
 import com.example.namajtrackerapp.ui.theme.WarmGold
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
@@ -76,8 +76,9 @@ fun ShareAppDialog(
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 8.dp,
+            color = MaterialTheme.colorScheme.background,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+            tonalElevation = 0.dp,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp)
@@ -101,13 +102,13 @@ fun ShareAppDialog(
                         Box(
                             modifier = Modifier
                                 .size(36.dp)
-                                .background(SoftButterAccent, CircleShape),
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Share,
                                 contentDescription = null,
-                                tint = ClayBrownPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -124,7 +125,7 @@ fun ShareAppDialog(
                         onClick = onDismiss,
                         modifier = Modifier
                             .size(32.dp)
-                            .background(MaterialTheme.colorScheme.background, CircleShape)
+                            .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Close,
@@ -171,7 +172,7 @@ fun ShareAppDialog(
                     Icon(
                         imageVector = Icons.Rounded.QrCode2,
                         contentDescription = null,
-                        tint = ClayBrownPrimary,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
@@ -193,8 +194,8 @@ fun ShareAppDialog(
                 // Play Store Link Bar
                 Surface(
                     shape = RoundedCornerShape(14.dp),
-                    color = SoftButterAccent.copy(alpha = 0.5f),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, WarmGold.copy(alpha = 0.3f)),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
@@ -209,7 +210,7 @@ fun ShareAppDialog(
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontSize = 11.sp
                             ),
-                            color = ClayBrownPrimary,
+                            color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.weight(1f)
@@ -254,9 +255,9 @@ fun ShareAppDialog(
                             openPlayStore(context, packageName, playStoreUrl)
                         },
                         shape = RoundedCornerShape(14.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, ClayBrownPrimary),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.6f)),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = ClayBrownPrimary
+                            contentColor = MaterialTheme.colorScheme.onSurface
                         ),
                         modifier = Modifier.weight(1f)
                     ) {
@@ -267,13 +268,15 @@ fun ShareAppDialog(
                             Icon(
                                 imageVector = Icons.Rounded.OpenInNew,
                                 contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.size(16.dp)
                             )
                             Text(
                                 text = if (language == AppLanguage.BANGLA) "প্লে স্টোর" else "Play Store",
                                 style = MaterialTheme.typography.labelMedium.copy(
                                     fontWeight = FontWeight.Bold
-                                )
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -297,13 +300,15 @@ fun ShareAppDialog(
                             Icon(
                                 imageVector = Icons.Rounded.Share,
                                 contentDescription = null,
+                                tint = Color.White,
                                 modifier = Modifier.size(16.dp)
                             )
                             Text(
                                 text = if (language == AppLanguage.BANGLA) "শেয়ার লিঙ্ক" else "Share Link",
                                 style = MaterialTheme.typography.labelMedium.copy(
                                     fontWeight = FontWeight.Bold
-                                )
+                                ),
+                                color = Color.White
                             )
                         }
                     }
@@ -313,57 +318,66 @@ fun ShareAppDialog(
     }
 }
 
-private fun generateQrCodeBitmap(text: String, size: Int): Bitmap? {
-    return try {
-        val matrix = MultiFormatWriter().encode(text, BarcodeFormat.QR_CODE, size, size)
-        val bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-        for (x in 0 until size) {
-            for (y in 0 until size) {
-                bmp.setPixel(
-                    x,
-                    y,
-                    if (matrix.get(x, y)) AndroidColor.parseColor("#3D291F") else AndroidColor.WHITE
-                )
-            }
-        }
-        bmp
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
-}
-
+/**
+ * Copy text to Android System Clipboard
+ */
 private fun copyToClipboard(context: Context, text: String) {
     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clip = ClipData.newPlainText("PlayStoreLink", text)
     clipboard.setPrimaryClip(clip)
 }
 
+/**
+ * Open Play Store app page or browser
+ */
 private fun openPlayStore(context: Context, packageName: String, playStoreUrl: String) {
     try {
-        val marketIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        context.startActivity(marketIntent)
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName"))
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
     } catch (e: Exception) {
-        val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(playStoreUrl)).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        context.startActivity(webIntent)
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(playStoreUrl))
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
     }
 }
 
-private fun shareAppLink(context: Context, playStoreUrl: String, language: AppLanguage) {
-    val shareText = if (language == AppLanguage.BANGLA)
-        "নামাজ ও আমল ট্র্যাক করার জন্য 'নামাজ ট্র্যাকার' অ্যাপটি ডাউনলোড করুন:\n$playStoreUrl"
-    else
-        "Download 'Namaz Tracker' app to track prayers and Islamic events:\n$playStoreUrl"
-
-    val intent = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_SUBJECT, "Namaz Tracker App")
-        putExtra(Intent.EXTRA_TEXT, shareText)
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+/**
+ * Trigger system share intent
+ */
+private fun shareAppLink(context: Context, url: String, language: AppLanguage) {
+    val shareText = if (language == AppLanguage.BANGLA) {
+        "আমার নামাজের হিসাব এবং প্রতিদিনের নোট রাখতে চমৎকার 'নামাজ ট্র্যাকার' অ্যাপ ব্যবহার করছি। ডাউনলোড করুন: $url"
+    } else {
+        "I am tracking my daily prayers and reflection notes with 'Namaj Tracker'. Download now: $url"
     }
-    context.startActivity(Intent.createChooser(intent, if (language == AppLanguage.BANGLA) "শেয়ার করুন" else "Share via"))
+
+    val sendIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, shareText)
+        type = "text/plain"
+    }
+    val shareIntent = Intent.createChooser(sendIntent, if (language == AppLanguage.BANGLA) "শেয়ার করুন" else "Share App")
+    shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    context.startActivity(shareIntent)
+}
+
+/**
+ * Helper to generate QR code bitmap using ZXing
+ */
+private fun generateQrCodeBitmap(content: String, size: Int): Bitmap? {
+    return try {
+        val writer = MultiFormatWriter()
+        val bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, size, size)
+        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        for (x in 0 until size) {
+            for (y in 0 until size) {
+                bitmap.setPixel(x, y, if (bitMatrix[x, y]) AndroidColor.parseColor("#4A221A") else AndroidColor.WHITE)
+            }
+        }
+        bitmap
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 }

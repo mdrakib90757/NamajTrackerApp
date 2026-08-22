@@ -49,6 +49,7 @@ import com.example.namajtrackerapp.localization.AppStrings
 import com.example.namajtrackerapp.model.AppLanguage
 import com.example.namajtrackerapp.model.PrayerStatus
 import com.example.namajtrackerapp.model.PrayerType
+import com.example.namajtrackerapp.ui.components.CustomTextField
 import com.example.namajtrackerapp.ui.theme.ClayBrownPrimary
 import com.example.namajtrackerapp.ui.theme.StatusLate
 import com.example.namajtrackerapp.ui.theme.StatusLateBg
@@ -58,6 +59,10 @@ import com.example.namajtrackerapp.ui.theme.StatusNotYet
 import com.example.namajtrackerapp.ui.theme.StatusNotYetBg
 import com.example.namajtrackerapp.ui.theme.StatusOnTime
 import com.example.namajtrackerapp.ui.theme.StatusOnTimeBg
+
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,13 +84,16 @@ fun QuickPrayerStatusBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.background,
+        tonalElevation = 0.dp
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 8.dp)
-                .padding(bottom = 32.dp)
+                .imePadding()
+                .padding(bottom = 16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             // Header
             Row(
@@ -203,17 +211,15 @@ fun QuickPrayerStatusBottomSheet(
                     )
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
-                        OutlinedTextField(
+                        CustomTextField(
                             value = noteText,
                             onValueChange = { noteText = it },
-                            label = { Text(AppStrings.addNoteForPrayer(language)) },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = ClayBrownPrimary,
-                                focusedLabelColor = ClayBrownPrimary
-                            ),
-                            maxLines = 3
+                            label = AppStrings.addNoteForPrayer(language),
+                            placeholder = if (language == AppLanguage.BANGLA) "নোট লিখুন..." else "Write note...",
+                            singleLine = false,
+                            minLines = 2,
+                            maxLines = 3,
+                            modifier = Modifier.fillMaxWidth()
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(

@@ -51,6 +51,7 @@ import com.example.namajtrackerapp.model.AppLanguage
 import com.example.namajtrackerapp.model.EventCategory
 import com.example.namajtrackerapp.ui.components.CustomDropdown
 import com.example.namajtrackerapp.ui.components.IslamicStarCanvas
+import com.example.namajtrackerapp.ui.components.NamajTopAppBar
 import com.example.namajtrackerapp.ui.theme.ClayBrownPrimary
 import com.example.namajtrackerapp.ui.theme.LightBorder
 import com.example.namajtrackerapp.ui.theme.SoftButterAccent
@@ -133,67 +134,38 @@ fun EventReportScreen(
         }
     }
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
+        NamajTopAppBar(
+            title = AppStrings.eventReportTitle(language),
+            subtitle = AppStrings.eventReportSubtitle(language),
+            onNavigateBack = onNavigateBack,
+            actions = {
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .background(SoftButterAccent, RoundedCornerShape(10.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IslamicStarCanvas(
+                        modifier = Modifier.size(18.dp),
+                        color = ClayBrownPrimary
+                    )
+                }
+            }
+        )
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 18.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
-             //Header Row
             item {
-               Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = onNavigateBack,
-                        modifier = Modifier
-                            .size(40.dp)
-                            .background(MaterialTheme.colorScheme.surface, CircleShape)
-                            .border(1.dp, LightBorder, CircleShape)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = AppStrings.eventReportTitle(language),
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Text(
-                            text = AppStrings.eventReportSubtitle(language),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .size(42.dp)
-                            .background(SoftButterAccent, RoundedCornerShape(12.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        IslamicStarCanvas(
-                            modifier = Modifier.size(24.dp),
-                            color = ClayBrownPrimary
-                        )
-                    }
-                }
+                Spacer(modifier = Modifier.height(14.dp))
             }
 
             // Filter Controls (Year & Month Dropdowns)

@@ -114,6 +114,17 @@ object AppStrings {
         }
     }
 
+    fun prayerRakatSummary(prayer: PrayerType, lang: AppLanguage): String = when (prayer) {
+        PrayerType.FAJR -> if (lang == AppLanguage.ENGLISH) "2 Fard + 2 Sunnah" else "২ ফরজ + ২ সুন্নত"
+        PrayerType.DHUHR -> if (lang == AppLanguage.ENGLISH) "4 Fard + 4 Sunnah" else "৪ ফরজ + ৪ সুন্নত"
+        PrayerType.ASR -> if (lang == AppLanguage.ENGLISH) "4 Fard" else "৪ ফরজ"
+        PrayerType.MAGHRIB -> if (lang == AppLanguage.ENGLISH) "3 Fard + 2 Sunnah" else "৩ ফরজ + ২ সুন্নত"
+        PrayerType.ISHA -> if (lang == AppLanguage.ENGLISH) "4 Fard + 2 Sunnah" else "৪ ফরজ + ২ সুন্নত"
+        PrayerType.TAHAJJUD -> if (lang == AppLanguage.ENGLISH) "Nawafil" else "নফল"
+        PrayerType.DUHA -> if (lang == AppLanguage.ENGLISH) "Sunnah" else "সুন্নত"
+        PrayerType.WITR -> if (lang == AppLanguage.ENGLISH) "3 Wajib" else "৩ ওয়াজিব"
+    }
+
     // Status Names
     fun statusName(status: PrayerStatus, lang: AppLanguage): String = when (status) {
         PrayerStatus.ON_TIME -> when (lang) {
@@ -201,9 +212,37 @@ object AppStrings {
         AppLanguage.BANGLA -> "অবস্থার বিবরণ"
     }
 
+    fun toBanglaDigits(str: String): String {
+        val bnDigits = charArrayOf('০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯')
+        return str.map { if (it.isDigit()) bnDigits[it - '0'] else it }.joinToString("")
+    }
+
+    fun formatHeaderDate(date: java.util.Date = java.util.Date(), lang: AppLanguage): String {
+        val cal = java.util.Calendar.getInstance().apply { time = date }
+        val dayOfWeek = cal.get(java.util.Calendar.DAY_OF_WEEK)
+        val dayOfMonth = cal.get(java.util.Calendar.DAY_OF_MONTH)
+        val month = cal.get(java.util.Calendar.MONTH)
+        val year = cal.get(java.util.Calendar.YEAR)
+
+        if (lang == AppLanguage.ENGLISH) {
+            val sdf = java.text.SimpleDateFormat("EEEE, d MMMM yyyy", java.util.Locale.US)
+            return sdf.format(date)
+        }
+
+        val daysBn = arrayOf("", "রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার")
+        val monthsBn = arrayOf("জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর")
+
+        val dayName = daysBn.getOrElse(dayOfWeek) { "" }
+        val monthName = monthsBn.getOrElse(month) { "" }
+        val dayNumBn = toBanglaDigits(dayOfMonth.toString())
+        val yearNumBn = toBanglaDigits(year.toString())
+
+        return "$dayName, $dayNumBn $monthName $yearNumBn"
+    }
+
     fun selectedDayTitle(date: String, lang: AppLanguage) = when (lang) {
         AppLanguage.ENGLISH -> "Prayers for $date"
-        AppLanguage.BANGLA -> "$date তারিখের নামাজের বিবরণ"
+        AppLanguage.BANGLA -> "${toBanglaDigits(date)} তারিখের নামাজের বিবরণ"
     }
 
     fun tapDayToEdit(language: AppLanguage): String {
@@ -657,6 +696,42 @@ object AppStrings {
     fun noReportEventsMsg(lang: AppLanguage) = when (lang) {
         AppLanguage.ENGLISH -> "No events found for the selected month and year."
         AppLanguage.BANGLA -> "নির্বাচিত মাস ও বছরে কোনো দিবস যুক্ত করা হয়নি।"
+    }
+
+    // Reflection Report & Analytics
+    fun noteReportBtn(lang: AppLanguage) = when (lang) {
+        AppLanguage.ENGLISH -> "Report"
+        AppLanguage.BANGLA -> "পরিসংখ্যান"
+    }
+
+    fun noteReportTitle(lang: AppLanguage) = when (lang) {
+        AppLanguage.ENGLISH -> "Reflection Analytics & Report"
+        AppLanguage.BANGLA -> "ভাবনা ও নোটের পরিসংখ্যান"
+    }
+
+    fun noteReportSubtitle(lang: AppLanguage) = when (lang) {
+        AppLanguage.ENGLISH -> "Monthly & yearly breakdown of spiritual reflections and duas"
+        AppLanguage.BANGLA -> "মাস ও বছর অনুযায়ী আত্মিক ভাবনা ও দোয়ার পরিসংখ্যান"
+    }
+
+    fun linkedToPrayerCountLabel(lang: AppLanguage) = when (lang) {
+        AppLanguage.ENGLISH -> "Linked to Prayer"
+        AppLanguage.BANGLA -> "নামাজের সাথের নোট"
+    }
+
+    fun totalTagsCountLabel(lang: AppLanguage) = when (lang) {
+        AppLanguage.ENGLISH -> "Tags Used"
+        AppLanguage.BANGLA -> "ব্যবহৃত ট্যাগ"
+    }
+
+    fun notesListTitle(lang: AppLanguage) = when (lang) {
+        AppLanguage.ENGLISH -> "Filtered Reflections & Duas"
+        AppLanguage.BANGLA -> "নির্বাচিত সময়সীমার নোট ও দোয়া"
+    }
+
+    fun noReportNotesMsg(lang: AppLanguage) = when (lang) {
+        AppLanguage.ENGLISH -> "No reflections found for the selected month and year."
+        AppLanguage.BANGLA -> "নির্বাচিত মাস ও বছরে কোনো নোট বা চিন্তা যুক্ত করা হয়নি।"
     }
 
     // Share App

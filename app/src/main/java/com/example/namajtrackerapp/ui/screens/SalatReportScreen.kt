@@ -53,6 +53,7 @@ import com.example.namajtrackerapp.model.AppLanguage
 import com.example.namajtrackerapp.model.PrayerStatus
 import com.example.namajtrackerapp.model.PrayerType
 import com.example.namajtrackerapp.ui.components.CustomDropdown
+import com.example.namajtrackerapp.ui.components.NamajTopAppBar
 import com.example.namajtrackerapp.ui.theme.ClayBrownPrimary
 import com.example.namajtrackerapp.ui.theme.LightBorder
 import com.example.namajtrackerapp.ui.theme.SoftButterAccent
@@ -184,68 +185,40 @@ fun SalatReportScreen(
         Triple(completed, onTime, Triple(late, missed, rakats))
     }
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
+        NamajTopAppBar(
+            title = AppStrings.salatReportTitle(language),
+            subtitle = AppStrings.salatReportSubtitle(language),
+            onNavigateBack = onNavigateBack,
+            actions = {
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .background(SoftButterAccent, RoundedCornerShape(10.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Analytics,
+                        contentDescription = null,
+                        tint = ClayBrownPrimary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+        )
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 18.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Header Row
             item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = onNavigateBack,
-                        modifier = Modifier
-                            .size(40.dp)
-                            .background(MaterialTheme.colorScheme.surface, CircleShape)
-                            .border(1.dp, LightBorder, CircleShape)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = AppStrings.salatReportTitle(language),
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Text(
-                            text = AppStrings.salatReportSubtitle(language),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .size(42.dp)
-                            .background(SoftButterAccent, RoundedCornerShape(12.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Analytics,
-                            contentDescription = null,
-                            tint = ClayBrownPrimary,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
+                Spacer(modifier = Modifier.height(14.dp))
             }
 
             // Filter Controls (Year & Month Dropdowns)

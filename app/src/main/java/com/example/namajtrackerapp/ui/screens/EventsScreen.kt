@@ -65,6 +65,7 @@ import com.example.namajtrackerapp.R
 import androidx.compose.material.icons.rounded.Analytics
 
 import com.example.namajtrackerapp.data.SampleDataProvider
+import com.example.namajtrackerapp.ui.components.NamajTopAppBar
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -72,12 +73,12 @@ fun EventsScreen(
     viewModel: NamazViewModel,
     onOpenReport: () -> Unit = {}
 ) {
-    val userSettings by viewModel.userSettings.collectAsState()
     val rawEvents by viewModel.events.collectAsState()
     val events = remember(rawEvents) {
         val sampleList = SampleDataProvider.getInitialEvents()
         (rawEvents + sampleList).distinctBy { it.titleEn }
     }
+    val userSettings by viewModel.userSettings.collectAsState()
     val selectedCategory by viewModel.eventCategoryFilter.collectAsState()
 
     val language = userSettings.language
@@ -91,6 +92,52 @@ fun EventsScreen(
     val totalCount = events.size
 
     Scaffold(
+        topBar = {
+            NamajTopAppBar(
+                title = AppStrings.eventsTitle(language),
+                subtitle = if (language == AppLanguage.ENGLISH) "Blessed dates & personal fasting tracker" else "মহিমান্বিত রাত ও রোজা-আমলের দিনপঞ্জিকা",
+                actions = {
+                    Surface(
+                        onClick = onOpenReport,
+                        shape = RoundedCornerShape(12.dp),
+                        color = SoftButterAccent,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, WarmGold.copy(alpha = 0.5f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Analytics,
+                                contentDescription = AppStrings.eventReportBtn(language),
+                                tint = ClayBrownPrimary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = AppStrings.eventReportBtn(language),
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = ClayBrownPrimary
+                            )
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .size(34.dp)
+                            .background(SoftButterAccent, RoundedCornerShape(10.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IslamicStarCanvas(
+                            modifier = Modifier.size(18.dp),
+                            color = ClayBrownPrimary
+                        )
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.openAddEvent() },
@@ -114,74 +161,8 @@ fun EventsScreen(
                 .padding(horizontal = 18.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // Header
             item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = AppStrings.eventsTitle(language),
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Text(
-                            text = if (language == AppLanguage.ENGLISH) "Blessed dates & personal fasting tracker" else "মহিমান্বিত রাত ও রোজা-আমলের দিনপঞ্জিকা",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.Top,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        // Event Report Button
-                        Surface(
-                            onClick = onOpenReport,
-                            shape = RoundedCornerShape(12.dp),
-                            color = SoftButterAccent,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, WarmGold.copy(alpha = 0.5f))
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Analytics,
-                                    contentDescription = AppStrings.eventReportBtn(language),
-                                    tint = ClayBrownPrimary,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Text(
-                                    text = AppStrings.eventReportBtn(language),
-                                    style = MaterialTheme.typography.labelMedium.copy(
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    color = ClayBrownPrimary
-                                )
-                            }
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .background(SoftButterAccent, RoundedCornerShape(12.dp)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            IslamicStarCanvas(
-                                modifier = Modifier.size(22.dp),
-                                color = ClayBrownPrimary
-                            )
-                        }
-                    }
-                }
+                Spacer(modifier = Modifier.height(14.dp))
             }
 
             // Summary Counter Pills (Lifetime + This Year)

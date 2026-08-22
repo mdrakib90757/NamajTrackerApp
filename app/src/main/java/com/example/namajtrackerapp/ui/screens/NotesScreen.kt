@@ -59,10 +59,16 @@ import com.example.namajtrackerapp.ui.theme.SoftButterAccent
 import com.example.namajtrackerapp.ui.theme.StatusMissed
 import com.example.namajtrackerapp.viewmodel.NamazViewModel
 
+import com.example.namajtrackerapp.ui.components.NamajTopAppBar
+
+import androidx.compose.material.icons.rounded.Analytics
+import com.example.namajtrackerapp.ui.theme.WarmGold
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NotesScreen(
-    viewModel: NamazViewModel
+    viewModel: NamazViewModel,
+    onOpenReport: () -> Unit = {}
 ) {
     val userSettings by viewModel.userSettings.collectAsState()
     val notes by viewModel.notes.collectAsState()
@@ -85,6 +91,52 @@ fun NotesScreen(
     }
 
     Scaffold(
+        topBar = {
+            NamajTopAppBar(
+                title = AppStrings.notesTitle(language),
+                subtitle = if (language == AppLanguage.ENGLISH) "Personal reflections, Duas, and Quranic thoughts" else "ব্যক্তিগত দোয়া, আয়াত ও আত্মশুদ্ধির ভাবনা",
+                actions = {
+                    Surface(
+                        onClick = onOpenReport,
+                        shape = RoundedCornerShape(12.dp),
+                        color = SoftButterAccent,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, WarmGold.copy(alpha = 0.5f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Analytics,
+                                contentDescription = AppStrings.noteReportBtn(language),
+                                tint = ClayBrownPrimary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = AppStrings.noteReportBtn(language),
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = ClayBrownPrimary
+                            )
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .size(34.dp)
+                            .background(SoftButterAccent, RoundedCornerShape(10.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IslamicStarCanvas(
+                            modifier = Modifier.size(18.dp),
+                            color = ClayBrownPrimary
+                        )
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.openAddNote() },
@@ -108,41 +160,8 @@ fun NotesScreen(
                 .padding(horizontal = 18.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // Header
             item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text(
-                            text = AppStrings.notesTitle(language),
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Text(
-                            text = if (language == AppLanguage.ENGLISH) "Personal reflections, Duas, and Quranic thoughts" else "ব্যক্তিগত দোয়া, আয়াত ও আত্মশুদ্ধির ভাবনা",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .background(SoftButterAccent, RoundedCornerShape(12.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        IslamicStarCanvas(
-                            modifier = Modifier.size(22.dp),
-                            color = ClayBrownPrimary
-                        )
-                    }
-                }
+                Spacer(modifier = Modifier.height(14.dp))
             }
 
             // Search Bar

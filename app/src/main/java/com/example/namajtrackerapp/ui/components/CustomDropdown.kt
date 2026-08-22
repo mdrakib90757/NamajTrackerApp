@@ -1,8 +1,10 @@
 package com.example.namajtrackerapp.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,13 +22,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import com.example.namajtrackerapp.ui.theme.ClayBrownPrimary
-import com.example.namajtrackerapp.ui.theme.LightBorder
-import com.example.namajtrackerapp.ui.theme.LightSurface
-
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,7 +37,7 @@ fun <T> CustomDropdown(
     label: String? = null,
     isRequired: Boolean = false,
     maxHeight: Dp = 260.dp,
-    containerColor: Color = LightSurface,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     itemTextColor: Color = MaterialTheme.colorScheme.onSurface
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -59,14 +57,27 @@ fun <T> CustomDropdown(
                 value = selectedOptionText,
                 onValueChange = {},
                 readOnly = true,
+                singleLine = true,
+                textStyle = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor(),
                 shape = RoundedCornerShape(14.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = ClayBrownPrimary,
-                    focusedLabelColor = ClayBrownPrimary
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+                    unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             )
 
@@ -74,22 +85,34 @@ fun <T> CustomDropdown(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
+                    .exposedDropdownSize()
                     .heightIn(max = maxHeight)
-                    .border(1.dp, LightBorder, RoundedCornerShape(14.dp)),
+                    .border(
+                        1.dp,
+                        MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        RoundedCornerShape(14.dp)
+                    ),
                 containerColor = containerColor
             ) {
                 options.forEach { option ->
+                    val isSelected = optionLabel(option) == selectedOptionText
                     DropdownMenuItem(
                         text = {
                             Text(
                                 text = optionLabel(option),
-                                color = itemTextColor
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                ),
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else itemTextColor
                             )
                         },
                         onClick = {
                             onOptionSelected(option)
                             expanded = false
                         },
+                        modifier = Modifier.background(
+                            if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f) else Color.Transparent
+                        ),
                         colors = MenuDefaults.itemColors(
                             textColor = itemTextColor
                         )

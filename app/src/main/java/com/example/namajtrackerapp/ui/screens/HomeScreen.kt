@@ -64,6 +64,7 @@ import com.example.namajtrackerapp.model.PrayerStatus
 import com.example.namajtrackerapp.model.PrayerType
 import com.example.namajtrackerapp.ui.components.CircularPrayerProgress
 import com.example.namajtrackerapp.ui.components.IslamicStarCanvas
+import com.example.namajtrackerapp.ui.components.NamajTopAppBar
 import com.example.namajtrackerapp.ui.components.StreakBadge
 import com.example.namajtrackerapp.ui.theme.ClayBrownPrimary
 import com.example.namajtrackerapp.ui.theme.SoftButterAccent
@@ -95,41 +96,33 @@ fun HomeScreen(
 
     var showSunnahSection by remember { mutableStateOf(false) }
 
-    val gregorianDate = remember {
-        val sdf = SimpleDateFormat("EEEE, d MMMM yyyy", Locale.US)
-        sdf.format(Date())
+    val gregorianDate = remember(language) {
+        AppStrings.formatHeaderDate(Date(), language)
     }
 
     val hijriDateStr = remember(language) {
         if (language == AppLanguage.ENGLISH) "14 Shaban 1446 AH" else "১৪ শাবান ১৪৪৬ হিজরি"
     }
 
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 18.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        // Top Header
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+        NamajTopAppBar(
+            titleContent = {
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         IslamicStarCanvas(
-                            modifier = Modifier.size(20.dp),
+                            modifier = Modifier.size(14.dp),
                             color = WarmGold
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = hijriDateStr,
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontWeight = FontWeight.Bold
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 11.sp
                             ),
                             color = WarmGold
                         )
@@ -137,15 +130,27 @@ fun HomeScreen(
                     Text(
                         text = gregorianDate,
                         style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
                         ),
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
-
+            },
+            actions = {
                 StreakBadge(streakDays = streakCount)
             }
-        }
+        )
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 18.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(14.dp))
+            }
 
         // Today's Progress Card with Warm Butter highlight
         item {
@@ -405,6 +410,7 @@ fun HomeScreen(
         }
     }
 }
+}
 
 @Composable
 fun PrayerCardItem(
@@ -494,12 +500,38 @@ fun PrayerCardItem(
                                 color = WarmGold
                             )
                         }
-                        Text(
-                            text = "${prayer.defaultTimeEn} • ${AppStrings.prayerDescription(prayer, language).take(22)}...",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1
-                        )
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = prayer.defaultTimeEn,
+                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                                color = ClayBrownPrimary
+                            )
+                            Text(
+                                text = "•",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = SoftButterAccent.copy(alpha = 0.7f)
+                            ) {
+                                Text(
+                                    text = AppStrings.prayerRakatSummary(prayer, language),
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 10.sp
+                                    ),
+                                    color = ClayBrownPrimary,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                )
+                            }
+                        }
                     }
                 }
 

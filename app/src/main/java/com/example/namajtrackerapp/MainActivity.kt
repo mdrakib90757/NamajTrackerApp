@@ -5,10 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -65,6 +68,7 @@ import com.example.namajtrackerapp.ui.screens.HomeScreen
 import com.example.namajtrackerapp.ui.screens.NotesScreen
 import com.example.namajtrackerapp.ui.screens.OnboardingScreen
 import com.example.namajtrackerapp.ui.screens.ProfileScreen
+import com.example.namajtrackerapp.ui.screens.ReflectionReportScreen
 import com.example.namajtrackerapp.ui.screens.SalatReportScreen
 import com.example.namajtrackerapp.ui.theme.ClayBrownPrimary
 import com.example.namajtrackerapp.ui.theme.NamazTrackerTheme
@@ -156,6 +160,7 @@ fun MainApp(viewModel: NamazViewModel) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             NamazBottomNav(
                 navController = navController,
@@ -167,32 +172,12 @@ fun MainApp(viewModel: NamazViewModel) {
             navController = navController,
             startDestination = Screen.Home.route,
             modifier = Modifier
-                .padding(innerPadding)
+                .padding(bottom = innerPadding.calculateBottomPadding())
                 .background(MaterialTheme.colorScheme.background),
-            enterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            popEnterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None }
         ) {
             composable(Screen.Home.route) {
                 HomeScreen(viewModel = viewModel)
@@ -210,7 +195,10 @@ fun MainApp(viewModel: NamazViewModel) {
                 )
             }
             composable(Screen.Notes.route) {
-                NotesScreen(viewModel = viewModel)
+                NotesScreen(
+                    viewModel = viewModel,
+                    onOpenReport = { navController.navigate("note_report") }
+                )
             }
             composable(Screen.Profile.route) {
                 ProfileScreen(
@@ -218,14 +206,62 @@ fun MainApp(viewModel: NamazViewModel) {
                     onReplayOnboarding = { isReplayingOnboarding = true }
                 )
             }
-            composable("salat_report") {
+            composable(
+                route = "salat_report",
+                enterTransition = {
+                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, tween(200)) + fadeIn(tween(200))
+                },
+                exitTransition = {
+                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, tween(200)) + fadeOut(tween(200))
+                },
+                popEnterTransition = {
+                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, tween(200)) + fadeIn(tween(200))
+                },
+                popExitTransition = {
+                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, tween(200)) + fadeOut(tween(200))
+                }
+            ) {
                 SalatReportScreen(
                     viewModel = viewModel,
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
-            composable("event_report") {
+            composable(
+                route = "event_report",
+                enterTransition = {
+                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, tween(200)) + fadeIn(tween(200))
+                },
+                exitTransition = {
+                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, tween(200)) + fadeOut(tween(200))
+                },
+                popEnterTransition = {
+                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, tween(200)) + fadeIn(tween(200))
+                },
+                popExitTransition = {
+                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, tween(200)) + fadeOut(tween(200))
+                }
+            ) {
                 EventReportScreen(
+                    viewModel = viewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable(
+                route = "note_report",
+                enterTransition = {
+                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, tween(200)) + fadeIn(tween(200))
+                },
+                exitTransition = {
+                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, tween(200)) + fadeOut(tween(200))
+                },
+                popEnterTransition = {
+                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, tween(200)) + fadeIn(tween(200))
+                },
+                popExitTransition = {
+                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, tween(200)) + fadeOut(tween(200))
+                }
+            ) {
+                ReflectionReportScreen(
                     viewModel = viewModel,
                     onNavigateBack = { navController.popBackStack() }
                 )
@@ -319,7 +355,13 @@ fun NamazBottomNav(
             tonalElevation = 0.dp
         ) {
             screens.forEach { screen ->
-                val selected = currentRoute == screen.route
+                val selected = when (screen) {
+                    Screen.Home -> currentRoute == Screen.Home.route
+                    Screen.Calendar -> currentRoute == Screen.Calendar.route || currentRoute == "salat_report"
+                    Screen.Events -> currentRoute == Screen.Events.route || currentRoute == "event_report"
+                    Screen.Notes -> currentRoute == Screen.Notes.route || currentRoute == "note_report"
+                    Screen.Profile -> currentRoute == Screen.Profile.route
+                }
 
                 NavigationBarItem(
                     icon = {
@@ -340,13 +382,24 @@ fun NamazBottomNav(
                     },
                     selected = selected,
                     onClick = {
-                        if (currentRoute != screen.route) {
+                        if (currentRoute == screen.route) return@NavigationBarItem
+
+                        val isSubRouteOfThisTab = when (screen) {
+                            Screen.Calendar -> currentRoute == "salat_report"
+                            Screen.Events -> currentRoute == "event_report"
+                            Screen.Notes -> currentRoute == "note_report"
+                            else -> false
+                        }
+
+                        if (isSubRouteOfThisTab) {
+                            navController.popBackStack(screen.route, inclusive = false)
+                        } else {
                             navController.navigate(screen.route) {
                                 popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
+                                    saveState = false
                                 }
                                 launchSingleTop = true
-                                restoreState = true
+                                restoreState = false
                             }
                         }
                     },

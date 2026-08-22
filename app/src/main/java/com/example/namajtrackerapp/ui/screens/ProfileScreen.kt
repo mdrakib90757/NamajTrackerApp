@@ -70,6 +70,9 @@ import com.example.namajtrackerapp.ui.theme.SoftButterAccent
 import com.example.namajtrackerapp.ui.theme.StatusOnTime
 import com.example.namajtrackerapp.viewmodel.NamazViewModel
 
+import com.example.namajtrackerapp.ui.components.EditProfileNameDialog
+import com.example.namajtrackerapp.ui.components.NamajTopAppBar
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ProfileScreen(
@@ -99,49 +102,38 @@ fun ProfileScreen(
         Icons.Rounded.Person
     )
 
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 18.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Top Header
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = AppStrings.profileTitle(language),
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Text(
-                        text = if (language == AppLanguage.ENGLISH) "Personal settings & lifetime stats" else "ব্যক্তিগত সেটিংস ও সর্বমোট আমল",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
+        NamajTopAppBar(
+            title = AppStrings.profileTitle(language),
+            subtitle = if (language == AppLanguage.ENGLISH) "Personal settings & lifetime stats" else "ব্যক্তিগত সেটিংস ও সর্বমোট আমল",
+            actions = {
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
-                        .background(SoftButterAccent, RoundedCornerShape(12.dp)),
+                        .size(34.dp)
+                        .background(SoftButterAccent, RoundedCornerShape(10.dp)),
                     contentAlignment = Alignment.Center
                 ) {
                     IslamicStarCanvas(
-                        modifier = Modifier.size(22.dp),
+                        modifier = Modifier.size(18.dp),
                         color = ClayBrownPrimary
                     )
                 }
             }
-        }
+        )
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 18.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(14.dp))
+            }
 
         // Profile & Avatar Card
         item {
@@ -177,56 +169,37 @@ fun ProfileScreen(
 
                     Spacer(modifier = Modifier.height(14.dp))
 
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = userSettings.userName,
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        IconButton(onClick = { isEditingName = true }) {
+                            Icon(
+                                imageVector = Icons.Rounded.Edit,
+                                contentDescription = "Edit name",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+
                     if (isEditingName) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            OutlinedTextField(
-                                value = tempName,
-                                onValueChange = { tempName = it },
-                                label = { Text(AppStrings.userNameLabel(language)) },
-                                modifier = Modifier.weight(1f),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = ClayBrownPrimary,
-                                    focusedLabelColor = ClayBrownPrimary
-                                ),
-                                singleLine = true
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Button(
-                                onClick = {
-                                    viewModel.updateUserName(tempName.trim())
-                                    isEditingName = false
-                                },
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = ClayBrownPrimary)
-                            ) {
-                                Text(AppStrings.save(language))
+                        EditProfileNameDialog(
+                            currentName = userSettings.userName,
+                            language = language,
+                            onDismiss = { isEditingName = false },
+                            onSave = { newName ->
+                                viewModel.updateUserName(newName)
+                                isEditingName = false
                             }
-                        }
-                    } else {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = userSettings.userName,
-                                style = MaterialTheme.typography.titleLarge.copy(
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            IconButton(onClick = { isEditingName = true }) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Edit,
-                                    contentDescription = "Edit name",
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
-                        }
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -633,6 +606,7 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
+}
 
     if (showShareDialog) {
         ShareAppDialog(

@@ -77,7 +77,8 @@ fun AddEditNoteBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.background,
+        tonalElevation = 0.dp
     ) {
         Column(
             modifier = Modifier
@@ -127,6 +128,7 @@ fun AddEditNoteBottomSheet(
                 value = content,
                 onValueChange = { content = it },
                 label = AppStrings.noteContentLabel(language),
+                placeholder = if (language == AppLanguage.ENGLISH) "Write your spiritual reflection, Dua, or Quranic thoughts..." else "আপনার আত্মিক ভাবনাসমূহ, গুরুত্বপূর্ণ শিক্ষা বা দোয়া বিস্তারিত লিখুন...",
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = false,
                 minLines = 4,
@@ -203,9 +205,16 @@ fun AddEditNoteBottomSheet(
                     modifier = Modifier
                         .weight(1f)
                         .height(50.dp),
-                    shape = RoundedCornerShape(14.dp)
+                    shape = RoundedCornerShape(14.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.8f)),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
-                    Text(AppStrings.cancel(language))
+                    Text(
+                        text = AppStrings.cancel(language),
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
 
                 Button(

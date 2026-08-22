@@ -51,7 +51,9 @@ import com.example.namajtrackerapp.model.AppLanguage
 import com.example.namajtrackerapp.model.DailyPrayerRecord
 import com.example.namajtrackerapp.model.PrayerStatus
 import com.example.namajtrackerapp.model.PrayerType
+import com.example.namajtrackerapp.ui.components.NamajTopAppBar
 import com.example.namajtrackerapp.ui.theme.ClayBrownPrimary
+import com.example.namajtrackerapp.ui.theme.LightTextPrimary
 import com.example.namajtrackerapp.ui.theme.SoftButterAccent
 import com.example.namajtrackerapp.ui.theme.StatusLate
 import com.example.namajtrackerapp.ui.theme.StatusLateBg
@@ -120,57 +122,74 @@ fun CalendarScreen(
 
     val selectedRecord = prayerRecords[selectedDateStr] ?: DailyPrayerRecord(selectedDateStr)
 
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 18.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = AppStrings.calendarTitle(language),
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Text(
-                        text = if (language == AppLanguage.ENGLISH) "Track consistency and past prayers" else "ধারাবাহিকতা ও বিগত দিনের নামাজের হিসাব",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+        NamajTopAppBar(
+            title = AppStrings.calendarTitle(language),
+            subtitle = if (language == AppLanguage.ENGLISH) "Track consistency and past prayers" else "ধারাবাহিকতা ও বিগত দিনের নামাজের হিসাব",
+            actions = {
+                Surface(
+                    onClick = onOpenReport,
+                    shape = RoundedCornerShape(12.dp),
+                    color = SoftButterAccent,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, WarmGold.copy(alpha = 0.5f))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Analytics,
+                            contentDescription = AppStrings.salatReportBtn(language),
+                            tint = ClayBrownPrimary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = AppStrings.salatReportBtn(language),
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = ClayBrownPrimary
+                        )
+                    }
                 }
 
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
-                        .background(SoftButterAccent, RoundedCornerShape(12.dp)),
+                        .size(34.dp)
+                        .background(SoftButterAccent, RoundedCornerShape(10.dp)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.CalendarMonth,
                         contentDescription = null,
                         tint = ClayBrownPrimary,
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }
-        }
+        )
 
-        // Stats Summary Cards (Monthly & Weekly Rates)
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 18.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(14.dp))
+            }
+
+            // Stats Summary Cards (Monthly & Weekly Rates)
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                 Card(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(20.dp),
@@ -384,6 +403,7 @@ fun CalendarScreen(
                                                     color = when {
                                                         isSelected -> Color.White
                                                         isToday -> ClayBrownPrimary
+                                                        bgTint != Color.Transparent -> LightTextPrimary
                                                         else -> MaterialTheme.colorScheme.onSurface
                                                     }
                                                 )
@@ -453,33 +473,6 @@ fun CalendarScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Surface(
-                        onClick = onOpenReport,
-                        shape = RoundedCornerShape(12.dp),
-                        color = SoftButterAccent,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, WarmGold.copy(alpha = 0.5f))
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Analytics,
-                                contentDescription = AppStrings.salatReportBtn(language),
-                                tint = ClayBrownPrimary,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Text(
-                                text = AppStrings.salatReportBtn(language),
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                color = ClayBrownPrimary
-                            )
-                        }
-                    }
-
                     if (selectedRecord.prayers.isNotEmpty()) {
                         IconButton(
                             onClick = { viewModel.requestDeletePrayerRecord(selectedDateStr) }
@@ -526,6 +519,7 @@ fun CalendarScreen(
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
+}
 }
 
 @Composable

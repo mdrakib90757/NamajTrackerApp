@@ -1,5 +1,6 @@
 package com.example.namajtrackerapp.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.example.namajtrackerapp.localization.AppStrings
 import com.example.namajtrackerapp.model.AppLanguage
 import com.example.namajtrackerapp.ui.theme.ClayBrownPrimary
@@ -136,19 +138,20 @@ fun HijriDatePickerDialog(
     val formattedHijriEn = "$selectedDay ${selectedMonth.nameEn} $selectedYear AH"
     val formattedHijriBn = "$dayBnStr ${selectedMonth.nameBn} $yearBnStr হিজরি"
 
-    var monthDropdownExpanded by remember { mutableStateOf(false) }
-    var yearDropdownExpanded by remember { mutableStateOf(false) }
-
     val yearsList = (1440..1460).toList()
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
         Surface(
             shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp,
+            color = MaterialTheme.colorScheme.background,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+            tonalElevation = 0.dp,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp)
+                .fillMaxWidth(0.92f)
+                .padding(vertical = 16.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -191,7 +194,8 @@ fun HijriDatePickerDialog(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = SoftButterAccent)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.5f))
                 ) {
                     Column(
                         modifier = Modifier
@@ -205,102 +209,52 @@ fun HijriDatePickerDialog(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp
                             ),
-                            color = ClayBrownPrimary
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                         Text(
                             text = if (language == AppLanguage.BANGLA) formattedHijriEn else formattedHijriBn,
                             style = MaterialTheme.typography.bodySmall,
-                            color = ClayBrownPrimary.copy(alpha = 0.75f)
+                            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f)
                         )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Month & Year Dropdowns Row
+                // Month & Year CustomDropdowns Row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     // Month Dropdown
-                    ExposedDropdownMenuBox(
-                        expanded = monthDropdownExpanded,
-                        onExpandedChange = { monthDropdownExpanded = !monthDropdownExpanded },
-                        modifier = Modifier.weight(1.5f)
-                    ) {
-                        OutlinedTextField(
-                            value = if (language == AppLanguage.BANGLA) selectedMonth.nameBn else selectedMonth.nameEn,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text(if (language == AppLanguage.BANGLA) "মাস" else "Month") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = monthDropdownExpanded) },
-                            modifier = Modifier.menuAnchor(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = ClayBrownPrimary,
-                                focusedLabelColor = ClayBrownPrimary
-                            )
-                        )
-                        ExposedDropdownMenu(
-                            expanded = monthDropdownExpanded,
-                            onDismissRequest = { monthDropdownExpanded = false }
-                        ) {
-                            HIJRI_MONTHS.forEachIndexed { index, month ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = if (language == AppLanguage.BANGLA) "${toBanglaNum(month.id)}. ${month.nameBn}" else "${month.id}. ${month.nameEn}",
-                                            fontWeight = if (index == selectedMonthIndex) FontWeight.Bold else FontWeight.Normal
-                                        )
-                                    },
-                                    onClick = {
-                                        selectedMonthIndex = index
-                                        monthDropdownExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
+                    CustomDropdown(
+                        selectedOptionText = if (language == AppLanguage.BANGLA) "${toBanglaNum(selectedMonth.id)}. ${selectedMonth.nameBn}" else "${selectedMonth.id}. ${selectedMonth.nameEn}",
+                        options = HIJRI_MONTHS,
+                        onOptionSelected = { month ->
+                            selectedMonthIndex = HIJRI_MONTHS.indexOf(month)
+                        },
+                        optionLabel = { month ->
+                            if (language == AppLanguage.BANGLA) "${toBanglaNum(month.id)}. ${month.nameBn}" else "${month.id}. ${month.nameEn}"
+                        },
+                        label = if (language == AppLanguage.BANGLA) "মাস" else "Month",
+                        maxHeight = 220.dp,
+                        modifier = Modifier.weight(1.3f)
+                    )
 
                     // Year Dropdown
-                    ExposedDropdownMenuBox(
-                        expanded = yearDropdownExpanded,
-                        onExpandedChange = { yearDropdownExpanded = !yearDropdownExpanded },
+                    CustomDropdown(
+                        selectedOptionText = if (language == AppLanguage.BANGLA) "$yearBnStr হিজরি" else "$selectedYear AH",
+                        options = yearsList,
+                        onOptionSelected = { year ->
+                            selectedYear = year
+                        },
+                        optionLabel = { year ->
+                            if (language == AppLanguage.BANGLA) "${toBanglaNum(year)} হিজরি" else "$year AH"
+                        },
+                        label = if (language == AppLanguage.BANGLA) "বছর" else "Year",
+                        maxHeight = 220.dp,
                         modifier = Modifier.weight(1f)
-                    ) {
-                        OutlinedTextField(
-                            value = if (language == AppLanguage.BANGLA) "$yearBnStr হিজরি" else "$selectedYear AH",
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text(if (language == AppLanguage.BANGLA) "বছর" else "Year") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = yearDropdownExpanded) },
-                            modifier = Modifier.menuAnchor(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = ClayBrownPrimary,
-                                focusedLabelColor = ClayBrownPrimary
-                            )
-                        )
-                        ExposedDropdownMenu(
-                            expanded = yearDropdownExpanded,
-                            onDismissRequest = { yearDropdownExpanded = false }
-                        ) {
-                            yearsList.forEach { year ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = if (language == AppLanguage.BANGLA) "${toBanglaNum(year)} হিজরি" else "$year AH",
-                                            fontWeight = if (year == selectedYear) FontWeight.Bold else FontWeight.Normal
-                                        )
-                                    },
-                                    onClick = {
-                                        selectedYear = year
-                                        yearDropdownExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(14.dp))
@@ -331,11 +285,11 @@ fun HijriDatePickerDialog(
                                 .size(38.dp)
                                 .clip(CircleShape)
                                 .background(
-                                    if (isSelected) ClayBrownPrimary else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                    if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
                                 )
                                 .border(
-                                    width = if (isSelected) 2.dp else 0.dp,
-                                    color = if (isSelected) WarmGold else Color.Transparent,
+                                    width = if (isSelected) 2.dp else 1.dp,
+                                    color = if (isSelected) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                                     shape = CircleShape
                                 )
                                 .clickable { selectedDay = day },
@@ -344,9 +298,9 @@ fun HijriDatePickerDialog(
                             Text(
                                 text = if (language == AppLanguage.BANGLA) toBanglaNum(day) else day.toString(),
                                 style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold
                                 ),
-                                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -364,9 +318,16 @@ fun HijriDatePickerDialog(
                         modifier = Modifier
                             .weight(1f)
                             .height(46.dp),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.6f)),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        )
                     ) {
-                        Text(AppStrings.cancel(language))
+                        Text(
+                            text = AppStrings.cancel(language),
+                            fontWeight = FontWeight.SemiBold
+                        )
                     }
 
                     Button(
@@ -378,17 +339,22 @@ fun HijriDatePickerDialog(
                             .weight(1f)
                             .height(46.dp),
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = ClayBrownPrimary)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = ClayBrownPrimary,
+                            contentColor = Color.White
+                        )
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Check,
                             contentDescription = null,
+                            tint = Color.White,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = if (language == AppLanguage.BANGLA) "ঠিক আছে" else "OK",
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
                         )
                     }
                 }

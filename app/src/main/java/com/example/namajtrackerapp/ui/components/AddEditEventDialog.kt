@@ -91,7 +91,8 @@ fun AddEditEventBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.background,
+        tonalElevation = 0.dp
     ) {
         Column(
             modifier = Modifier
@@ -176,9 +177,7 @@ fun AddEditEventBottomSheet(
             }
 
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { openDatePicker() }
+                modifier = Modifier.fillMaxWidth()
             ) {
                 CustomTextField(
                     value = dateStr,
@@ -198,7 +197,10 @@ fun AddEditEventBottomSheet(
                 Box(
                     modifier = Modifier
                         .matchParentSize()
-                        .clickable { openDatePicker() }
+                        .clickable(
+                            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                            indication = null
+                        ) { openDatePicker() }
                 )
             }
 
@@ -218,9 +220,7 @@ fun AddEditEventBottomSheet(
 
             // Hijri Date (Read-only, opens HijriDatePickerDialog on tap)
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { showHijriDatePicker = true }
+                modifier = Modifier.fillMaxWidth()
             ) {
                 CustomTextField(
                     value = if (language == AppLanguage.BANGLA && hijriDateBn.isNotBlank()) hijriDateBn else hijriDateEn,
@@ -240,7 +240,10 @@ fun AddEditEventBottomSheet(
                 Box(
                     modifier = Modifier
                         .matchParentSize()
-                        .clickable { showHijriDatePicker = true }
+                        .clickable(
+                            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                            indication = null
+                        ) { showHijriDatePicker = true }
                 )
             }
 
@@ -317,9 +320,16 @@ fun AddEditEventBottomSheet(
                     modifier = Modifier
                         .weight(1f)
                         .height(50.dp),
-                    shape = RoundedCornerShape(14.dp)
+                    shape = RoundedCornerShape(14.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.8f)),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
-                    Text(AppStrings.cancel(language))
+                    Text(
+                        text = AppStrings.cancel(language),
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
 
                 Button(
