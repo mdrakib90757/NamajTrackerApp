@@ -403,6 +403,24 @@ object AppStrings {
         AppLanguage.BANGLA -> "ট্যাগ"
     }
 
+    fun tagLabel(tag: String, lang: AppLanguage): String = when (lang) {
+        AppLanguage.ENGLISH -> tag
+        AppLanguage.BANGLA -> when (tag) {
+            "Tadabbur" -> "তাদাব্বুর"
+            "Dua" -> "দোয়া"
+            "Quran Ayah" -> "কুরআনের আয়াত"
+            "Fajr" -> "ফজর"
+            "Khushu" -> "খুশু"
+            "Ramadan" -> "রমজান"
+            "Habit" -> "অভ্যাস"
+            "Goals" -> "লক্ষ্য"
+            "Gratitude" -> "কৃতজ্ঞতা"
+            "Ayah Reflection" -> "আয়াত তাফসীর"
+            "Consistency" -> "ধারাবাহিকতা"
+            else -> tag
+        }
+    }
+
     fun noNotesTitle(lang: AppLanguage) = when (lang) {
         AppLanguage.ENGLISH -> "Your Journal is Empty"
         AppLanguage.BANGLA -> "আপনার ডায়েরি এখনো খালি"

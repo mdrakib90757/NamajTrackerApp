@@ -2,6 +2,7 @@ package com.example.namajtrackerapp.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -32,6 +33,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -87,11 +89,17 @@ fun QuickPrayerStatusBottomSheet(
         containerColor = MaterialTheme.colorScheme.background,
         tonalElevation = 0.dp
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 8.dp)
-                .imePadding()
+        Surface(
+            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+            color = MaterialTheme.colorScheme.background,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 8.dp)
+                    .imePadding()
                 .padding(bottom = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
@@ -208,7 +216,8 @@ fun QuickPrayerStatusBottomSheet(
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                    )
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
                         CustomTextField(
@@ -239,6 +248,7 @@ fun QuickPrayerStatusBottomSheet(
         }
     }
 }
+}
 
 @Composable
 fun StatusOptionItem(
@@ -264,14 +274,13 @@ fun StatusOptionItem(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .border(
-                width = if (isSelected) 2.dp else 0.dp,
-                color = animatedBorderColor,
-                shape = RoundedCornerShape(16.dp)
-            )
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = animatedBg)
+        colors = CardDefaults.cardColors(containerColor = animatedBg),
+        border = BorderStroke(
+            width = if (isSelected) 2.dp else 1.dp,
+            color = if (isSelected) animatedBorderColor else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+        )
     ) {
         Row(
             modifier = Modifier

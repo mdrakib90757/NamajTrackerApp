@@ -1,5 +1,6 @@
 package com.example.namajtrackerapp.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -220,7 +221,7 @@ fun NotesScreen(
                             onClick = {
                                 viewModel.setSelectedNoteTag(if (selectedTag == tag) null else tag)
                             },
-                            label = { Text(tag) },
+                            label = { Text(AppStrings.tagLabel(tag, language)) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = SoftButterAccent,
                                 selectedLabelColor = ClayBrownPrimary
@@ -247,6 +248,7 @@ fun NotesScreen(
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surface
                             ),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                         ) {
                             Image(
@@ -313,6 +315,7 @@ fun SpiritualNoteCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(18.dp)) {
@@ -410,7 +413,7 @@ fun SpiritualNoteCard(
                             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                         ) {
                             Text(
-                                text = "#$tag",
+                                text = "#${AppStrings.tagLabel(tag, language)}",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = ClayBrownPrimary,
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)

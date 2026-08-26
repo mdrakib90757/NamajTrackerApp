@@ -1,5 +1,6 @@
 package com.example.namajtrackerapp.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -101,7 +102,7 @@ fun ReflectionReportScreen(
 
     fun getYearName(yearStr: String): String {
         if (yearStr == "ALL") return AppStrings.allYears(language)
-        return yearStr
+        return if (language == AppLanguage.BANGLA) AppStrings.toBanglaDigits(yearStr) else yearStr
     }
 
     // Filter notes matching selected year and month
@@ -177,6 +178,7 @@ fun ReflectionReportScreen(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -242,6 +244,7 @@ fun ReflectionReportScreen(
                         colors = CardDefaults.cardColors(
                             containerColor = SoftButterAccent
                         ),
+                        border = BorderStroke(1.dp, ClayBrownPrimary.copy(alpha = 0.25f)),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -282,6 +285,7 @@ fun ReflectionReportScreen(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surface
                         ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -326,6 +330,7 @@ fun ReflectionReportScreen(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surface
                         ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -367,7 +372,7 @@ fun ReflectionReportScreen(
                                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                                         ) {
                                             Text(
-                                                text = tag,
+                                                text = AppStrings.tagLabel(tag, language),
                                                 style = MaterialTheme.typography.labelMedium.copy(
                                                     fontWeight = FontWeight.SemiBold
                                                 ),
@@ -418,7 +423,8 @@ fun ReflectionReportScreen(
                         shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surface
-                        )
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
                     ) {
                         Column(
                             modifier = Modifier
@@ -450,6 +456,7 @@ fun ReflectionReportScreen(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surface
                         ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -549,7 +556,7 @@ fun ReflectionReportScreen(
                                             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                                         ) {
                                             Text(
-                                                text = "#$tag",
+                                                text = "#${AppStrings.tagLabel(tag, language)}",
                                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
