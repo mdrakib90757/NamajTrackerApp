@@ -70,10 +70,17 @@ import com.example.namajtrackerapp.ui.screens.OnboardingScreen
 import com.example.namajtrackerapp.ui.screens.ProfileScreen
 import com.example.namajtrackerapp.ui.screens.ReflectionReportScreen
 import com.example.namajtrackerapp.ui.screens.SalatReportScreen
+import com.example.namajtrackerapp.ui.screens.SplashScreen
 import com.example.namajtrackerapp.ui.theme.ClayBrownPrimary
 import com.example.namajtrackerapp.ui.theme.NamazTrackerTheme
 import com.example.namajtrackerapp.ui.theme.SoftButterAccent
 import com.example.namajtrackerapp.viewmodel.NamazViewModel
+
+private enum class AppFlowState {
+    SPLASH,
+    ONBOARDING,
+    MAIN_APP
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -134,16 +141,31 @@ fun MainApp(viewModel: NamazViewModel) {
     val userSettings by viewModel.userSettings.collectAsState()
     val language = userSettings.language
 
-    // Check if onboarding needs to be shown
+    var currentFlowState by remember { mutableStateOf(AppFlowState.SPLASH) }
     var isReplayingOnboarding by remember { mutableStateOf(false) }
-    val showOnboarding = !userSettings.hasCompletedOnboarding || isReplayingOnboarding
 
-    if (showOnboarding) {
+    // Splash screen flow
+    if (currentFlowState == AppFlowState.SPLASH) {
+        SplashScreen(
+            onSplashFinished = {
+                if (!userSettings.hasCompletedOnboarding) {
+                    currentFlowState = AppFlowState.ONBOARDING
+                } else {
+                    currentFlowState = AppFlowState.MAIN_APP
+                }
+            }
+        )
+        return
+    }
+
+    // Onboarding flow
+    if (currentFlowState == AppFlowState.ONBOARDING || isReplayingOnboarding) {
         OnboardingScreen(
             language = language,
             onFinish = {
                 viewModel.setOnboardingCompleted(true)
                 isReplayingOnboarding = false
+                currentFlowState = AppFlowState.MAIN_APP
             }
         )
         return

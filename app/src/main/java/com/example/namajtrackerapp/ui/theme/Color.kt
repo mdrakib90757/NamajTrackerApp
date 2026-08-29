@@ -51,3 +51,12 @@ val StatusNotYet = Color(0xFF8C827A)          // Neutral slate warm
 val StatusNotYetBg = Color(0xFFECE7E1)
 val StatusNotYetDark = Color(0xFFA89F9A)
 val StatusNotYetDarkBg = Color(0xFF2A2433)
+
+// Splash Screen & Islamic Accent Colors
+val DarkBackground = Color(0xFF1B0B04)
+val GoldPrimary = Color(0xFFDA9C38)
+val GoldLight = Color(0xFFFFCF70)
+val GoldGlow = Color(0x88FFCF70)
+val TextGold = Color(0xFFF5E6C8)
+val TextGoldSecondary = Color(0xFFCBB294)
+
